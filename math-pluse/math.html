@@ -1,0 +1,214 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+  <meta charset="UTF-8">
+  <title>ریاضی‌ پلاس | همه ابزارها در یک فایل</title>
+  <link href="https://fonts.googleapis.com/css2?family=Vazir&display=swap" rel="stylesheet">
+  <style>
+    body {
+      font-family: 'Vazir', sans-serif;
+      background: linear-gradient(to right, #0f2027, #203a43, #2c5364);
+      color: #f0f0f0;
+      text-align: center;
+      padding: 60px 20px;
+      margin: 0;
+    }
+    h1 { font-size: 2.5em; margin-bottom: 20px; }
+    .section {
+      background: white;
+      color: #333;
+      padding: 20px;
+      margin: 20px auto;
+      border-radius: 10px;
+      box-shadow: 0 0 10px #ccc;
+      max-width: 700px;
+      text-align: right;
+    }
+    input, button, textarea {
+      padding: 10px;
+      margin: 5px;
+      font-size: 1em;
+      border-radius: 5px;
+      border: none;
+    }
+    button {
+      background-color: #0072ff;
+      color: white;
+      cursor: pointer;
+    }
+    button:hover {
+      background-color: #005bb5;
+    }
+    textarea {
+      width: 100%;
+      height: 100px;
+      resize: vertical;
+    }
+    .locked {
+      color: red;
+      font-weight: bold;
+    }
+    .admin-only {
+      display: none;
+    }
+  </style>
+</head>
+<body>
+  <h1>🧮 ریاضی‌ پلاس</h1>
+  <p id="welcomeText">برای استفاده از ابزارها لطفاً وارد شوید.</p>
+
+  <!-- ورود / ثبت‌نام -->
+  <div class="section" id="authSection">
+    <h2>🔐 ورود / ثبت‌نام</h2>
+    <input id="username" placeholder="نام کاربری">
+    <input id="password" type="password" placeholder="رمز عبور">
+    <button onclick="login()">ورود</button>
+    <button onclick="signup()">ثبت‌نام</button>
+  </div>
+
+  <!-- اتحادهای ریاضی -->
+  <div class="section">
+    <h2>📐 اتحادهای ریاضی</h2>
+    <p>(a + b)² = a² + 2ab + b²</p>
+    <p>(a - b)² = a² - 2ab + b²</p>
+    <p>(a + b)(a - b) = a² - b²</p>
+    <p>(a + b)³ = a³ + 3a²b + 3ab² + b³</p>
+    <p>(a - b)³ = a³ - 3a²b + 3ab² - b³</p>
+  </div>
+
+  <!-- محاسبات عددی -->
+  <div class="section locked" id="calcSection">
+    <h2>🧠 محاسبات عددی</h2>
+    <h3>حل معادله درجه دوم</h3>
+    <input id="a" type="number" placeholder="a">
+    <input id="b" type="number" placeholder="b">
+    <input id="c" type="number" placeholder="c">
+    <button onclick="solveQuadratic()">محاسبه</button>
+    <div id="output"></div>
+
+    <h3>بررسی عدد اول</h3>
+    <input id="primeInput" type="number" placeholder="عدد">
+    <button onclick="checkPrime()">بررسی</button>
+    <div id="primeOutput"></div>
+
+    <h3>محاسبه فاکتوریل</h3>
+    <input id="factInput" type="number" placeholder="عدد">
+    <button onclick="calculateFactorial()">محاسبه</button>
+    <div id="factOutput"></div>
+  </div>
+
+  <!-- یادداشت‌ها -->
+  <div class="section locked" id="notesSection">
+    <h2>📝 یادداشت‌ها</h2>
+    <div id="notesContainer"></div>
+  </div>
+
+  <!-- پنل مدیریت -->
+  <div class="section admin-only" id="adminSection">
+    <h2>🛠 پنل مدیریت</h2>
+    <div id="userList"></div>
+  </div>
+
+  <script>
+    const USERS_KEY = 'rp_users';
+    const CURRENT_KEY = 'rp_current';
+
+    function simpleHash(str) {
+      return btoa(unescape(encodeURIComponent(str)));
+    }
+
+    function loadUsers() {
+      try { return JSON.parse(localStorage.getItem(USERS_KEY) || '[]'); }
+      catch(e) { return []; }
+    }
+
+    function saveUsers(users) {
+      localStorage.setItem(USERS_KEY, JSON.stringify(users));
+    }
+
+    function setCurrentUser(username) {
+      localStorage.setItem(CURRENT_KEY, username);
+    }
+
+    function getCurrentUser() {
+      return localStorage.getItem(CURRENT_KEY);
+    }
+
+    function login() {
+      const u = document.getElementById('username').value.trim();
+      const p = document.getElementById('password').value;
+      const users = loadUsers();
+      const h = simpleHash(p);
+      const found = users.find(x => x.username === u && x.password === h);
+      if (!found) return alert('نام کاربری یا رمز اشتباه است');
+      setCurrentUser(u);
+      alert('ورود موفقیت‌آمیز بود');
+      updateUI();
+    }
+
+    function signup() {
+      const u = document.getElementById('username').value.trim();
+      const p = document.getElementById('password').value;
+      if (!u || !p) return alert('نام کاربری و رمز را وارد کنید');
+      const users = loadUsers();
+      if (users.find(x => x.username === u)) return alert('نام کاربری قبلاً ثبت شده');
+      users.push({ username: u, password: simpleHash(p) });
+      saveUsers(users);
+      setCurrentUser(u);
+      alert('ثبت‌نام موفق بود');
+      updateUI();
+    }
+
+    function solveQuadratic() {
+      let a = parseFloat(document.getElementById("a").value);
+      let b = parseFloat(document.getElementById("b").value);
+      let c = parseFloat(document.getElementById("c").value);
+      let delta = b*b - 4*a*c;
+      let out = document.getElementById("output");
+      if (delta < 0) {
+        out.innerText = "ریشه حقیقی ندارد.";
+      } else {
+        let x1 = (-b + Math.sqrt(delta)) / (2*a);
+        let x2 = (-b - Math.sqrt(delta)) / (2*a);
+        out.innerText = `ریشه‌ها: x₁ = ${x1.toFixed(2)}, x₂ = ${x2.toFixed(2)}`;
+      }
+    }
+
+    function checkPrime() {
+      let n = parseInt(document.getElementById("primeInput").value);
+      let out = document.getElementById("primeOutput");
+      if (n <= 1) return out.innerText = "عدد اول نیست.";
+      for (let i = 2; i*i <= n; i++) {
+        if (n % i === 0) return out.innerText = "عدد اول نیست.";
+      }
+      out.innerText = "عدد اول است!";
+    }
+
+    function calculateFactorial() {
+      let n = parseInt(document.getElementById("factInput").value);
+      let result = 1;
+      for (let i = 2; i <= n; i++) result *= i;
+      document.getElementById("factOutput").innerText = `فاکتوریل: ${result}`;
+    }
+
+    function getNotes(username) {
+      try {
+        return JSON.parse(localStorage.getItem('notes_' + username) || '["","","","",""]');
+      } catch(e) {
+        return ["","","","",""];
+      }
+    }
+
+    function saveNotes(username, notes) {
+      localStorage.setItem('notes_' + username, JSON.stringify(notes));
+    }
+
+    function renderNotes(user) {
+      const notes = getNotes(user);
+      const container = document.getElementById('notesContainer');
+      container.innerHTML = '';
+      for (let i = 0; i < 5; i++) {
+        container.innerHTML += `
+          <h3>یادداشت ${i+1}</h3>
+          <textarea id="note${i}">${notes[i]}</textarea>
+          <button onclick="saveNote(${

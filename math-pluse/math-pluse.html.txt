@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="fa">
+<head>
+  <meta charset="UTF-8">
+  <title>ریاضی پلاس</title>
+  <style>
+    body {
+      font-family: 'Vazir', sans-serif;
+      background-color: #fdfdfd;
+      margin: 0;
+      padding: 0;
+      direction: rtl;
+      text-align: center;
+    }
+    header {
+      background-color: #4caf50;
+      color: white;
+      padding: 20px 0;
+    }
+    nav {
+      margin: 30px 0;
+    }
+    nav a {
+      margin: 0 15px;
+      text-decoration: none;
+      color: #333;
+      font-weight: bold;
+      font-size: 18px;
+    }
+    nav a:hover {
+      color: #4caf50;
+    }
+    .intro {
+      margin-top: 50px;
+      font-size: 22px;
+      color: #555;
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <h1>ریاضی پلاس</h1>
+    <p>سایت تخصصی آموزش و ابزارهای ریاضی</p>
+  </header>
+
+  <nav>
+    <a href="calculator.html">محاسبات</a>
+    <a href="identities.html">اتحادها</a>
+    <a href="notes.html">یادداشت‌های من</a>
+    <a href="login.html">ورود</a>
+    <a href="register.html">ثبت‌نام</a>
+  </nav>
+
+  <div class="intro">
+    <p>با ریاضی‌پلاس، ریاضی رو ساده‌تر، سریع‌تر و حرفه‌ای‌تر یاد بگیر!</p>
+  </div>
+</body>
+</html>
